@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logistics Class - Assignment Submission</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: url("/mnt/data/image.png") no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .container {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 16px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        max-width: 800px;
+        width: 100%;
+        text-align: center;
+        border: 2px solid #d1d5db;
+        position: relative;
+      }
+      .header {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #ef4444;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 1.25rem;
+        font-weight: bold;
+        z-index: 1;
+      }
+      h1 {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+        color: #374151;
+        text-transform: uppercase;
+      }
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        color: #6b7280;
+      }
+      input {
+        width: 100%;
+        padding: 0.75rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 12px;
+        font-size: 1rem;
+        background: #f9fafb;
+        transition: border-color 0.3s;
+      }
+      input:focus {
+        border-color: #2563eb;
+        outline: none;
+      }
+      button {
+        width: 100%;
+        padding: 0.75rem;
+        background: linear-gradient(90deg, #3b82f6, #2563eb);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s;
+      }
+      button:hover {
+        background: linear-gradient(90deg, #2563eb, #1e40af);
+        transform: translateY(-2px);
+      }
+      .footer {
+        margin-top: 2rem;
+        font-size: 0.875rem;
+        color: #9ca3af;
+      }
+      .styled-name {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #ef4444;
+      }
+      .files {
+        margin-top: 2rem;
+        text-align: left;
+      }
+      .files h2 {
+        font-size: 1.25rem;
+        color: #374151;
+        margin-bottom: 1rem;
+      }
+      .files ul {
+        list-style: none;
+        padding: 0;
+      }
+      .files ul li {
+        margin-bottom: 0.5rem;
+      }
+      .files ul li a {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .files ul li a:hover {
+        text-decoration: underline;
+      }
+      .files p {
+        font-size: 1rem;
+        color: #6b7280;
+      }
+      .delete-button {
+        color: red;
+        cursor: pointer;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">Logistics Class</div>
+      <h1>Assignment Submission</h1>
+      <form id="assignmentForm">
+        <label for="link">Assignment Link *</label>
+        <input
+          type="url"
+          id="link"
+          name="link"
+          required
+          placeholder="Enter assignment link"
+        />
+
+        <button type="submit">Submit Assignment</button>
+      </form>
+
+      <div class="files">
+        <h2>Uploaded Assignments:</h2>
+        <ul id="fileList">
+          <p id="noFiles">Assignments haven't been uploaded yet.</p>
+        </ul>
+      </div>
+
+      <div class="footer">
+        <p>
+          Designed by <span class="styled-name">Nurillo</span> (ID: 2217527)
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const assignmentForm = document.getElementById("assignmentForm");
+      const fileList = document.getElementById("fileList");
+      const noFilesMessage = document.getElementById("noFiles");
+
+      function displayUploadedFiles() {
+        const uploadedData =
+          JSON.parse(localStorage.getItem("uploadedData")) || [];
+
+        fileList.innerHTML = "";
+        if (uploadedData.length > 0) {
+          noFilesMessage.style.display = "none";
+          uploadedData.forEach((item, index) => {
+            const listItem = document.createElement("li");
+
+            const link = document.createElement("a");
+            link.href = item.link;
+            link.target = "_blank";
+            link.textContent = item.name;
+
+            const deleteButton = document.createElement("span");
+            deleteButton.textContent = " [Delete]";
+            deleteButton.classList.add("delete-button");
+            deleteButton.onclick = () => deleteAssignment(index);
+
+            listItem.appendChild(link);
+            listItem.appendChild(deleteButton);
+            fileList.appendChild(listItem);
+          });
+        } else {
+          noFilesMessage.style.display = "block";
+        }
+      }
+
+      function deleteAssignment(index) {
+        const uploadedData =
+          JSON.parse(localStorage.getItem("uploadedData")) || [];
+        uploadedData.splice(index, 1);
+        localStorage.setItem("uploadedData", JSON.stringify(uploadedData));
+        displayUploadedFiles();
+      }
+
+      assignmentForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const link = document.getElementById("link").value;
+        const name = prompt("Please enter the assignment title:");
+
+        if (name) {
+          const uploadedData =
+            JSON.parse(localStorage.getItem("uploadedData")) || [];
+          uploadedData.push({ name, link });
+          localStorage.setItem("uploadedData", JSON.stringify(uploadedData));
+          assignmentForm.reset();
+          displayUploadedFiles();
+        }
+      });
+
+      displayUploadedFiles();
+    </script>
+  </body>
+</html>
